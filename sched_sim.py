@@ -1,5 +1,7 @@
-#!/opt/local/bin/python
-# CS 450 scheduling simulator 
+# CS 450 scheduling simulation assignment driver program
+#
+# - run with `python sched_sim.py -h` for command line help
+#  
 # Michael Lee <lee@iit.edu>
 
 import io
@@ -184,6 +186,7 @@ class Simulator:
                     (job.wait_time+job.run_time)/n_cpubursts,
                     job.completed_ts - job.arrival_ts))
         print
+        self.scheduler.print_report()
 
 
 if __name__ == '__main__':
