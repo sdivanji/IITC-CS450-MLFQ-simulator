@@ -37,10 +37,11 @@ class Job:
         self.io_time        = 0
 
     def __repr__(self):
-        return '[ Job {:<3d};'.format(self.jid) + \
-               ' # bursts left = {:<3d}, total wait time = {:<5d} ]'.format(
-                   len(self.bursts),
-                   self.wait_time)
+        return ('[ Job {:<3d}; # bursts left = {:<3d}, '
+                'total wait time = {:<5d} ]').format(
+                self.jid,
+                len(self.bursts),
+                self.wait_time)
 
 
 class Event:
@@ -172,6 +173,7 @@ class Simulator:
         print('{:>5s} | {:>10s} | {:>10s} | {:>10s} | {:>10s}'.format(
                 'JID', 'Avg CPU', 'Avg wait', 'Avg rspnse', 'Turnaround'))
         print('-' * 57)
+        sum_cpu = sum_wait = sum_rsp = sum_trn = 0
         for jid in sorted(self.jobs.keys()):
             job = self.jobs[jid]
             if job.state != Job.TERMINATED:
@@ -179,12 +181,22 @@ class Simulator:
                       "Consider increasing simulation time.").format(jid)
                 continue
             n_cpubursts = float(job.n_bursts//2 + 1)
+            avg_cpu  = job.run_time / n_cpubursts
+            sum_cpu  += avg_cpu
+            avg_wait = job.wait_time / n_cpubursts
+            sum_wait += avg_wait
+            avg_rsp  = avg_cpu + avg_wait
+            sum_rsp  += avg_rsp
+            trnarnd  = job.completed_ts - job.arrival_ts
+            sum_trn  += trnarnd
             print('{:5d} | {:10.2f} | {:10.2f} | {:10.2f} | {:10d}'.format(
-                    jid, 
-                    job.run_time/n_cpubursts,
-                    job.wait_time/n_cpubursts,
-                    (job.wait_time+job.run_time)/n_cpubursts,
-                    job.completed_ts - job.arrival_ts))
+                    jid, avg_cpu, avg_wait, avg_rsp, trnarnd))
+        print('-' * 57)
+        print('  Avg | {:10.2f} | {:10.2f} | {:10.2f} | {:10.2f}'.format(
+                sum_cpu / len(self.jobs),
+                sum_wait / len(self.jobs),
+                sum_rsp / len(self.jobs),
+                float(sum_trn) / len(self.jobs)))
         print
         self.scheduler.print_report()
 
