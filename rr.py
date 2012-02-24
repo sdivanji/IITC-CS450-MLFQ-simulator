@@ -17,10 +17,15 @@ class RoundRobinScheduler:
     def job_ready(self, jid):
         self.queue_lengths.append(len(self.ready_queue))
         self.ready_queue.append(jid)
+
+    def job_quantum_expired(self, jid):
+        self.queue_lengths.append(len(self.ready_queue))
+        self.ready_queue.append(jid)
+        self.preempt_cnts[jid] += 1
     
     def job_preempted(self, jid):
         self.queue_lengths.append(len(self.ready_queue))
-        self.ready_queue.append(jid)
+        self.ready_queue.appendleft(jid)
         self.preempt_cnts[jid] += 1
 
     def job_terminated(self, jid):
@@ -28,6 +33,9 @@ class RoundRobinScheduler:
 
     def job_blocked(self, jid):
         pass
+
+    def needs_resched(self):
+        return False
 
     def next_job_and_quantum(self):
         return (self.ready_queue.popleft() if self.ready_queue else None,
