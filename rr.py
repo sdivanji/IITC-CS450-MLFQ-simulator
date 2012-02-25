@@ -1,6 +1,7 @@
 # Sample round robin scheduler implementaion
 # Michael Lee <lee@iit.edu>
 
+from __future__ import print_function
 from collections import deque
 
 class RoundRobinScheduler:
@@ -42,14 +43,14 @@ class RoundRobinScheduler:
                 self.quantum)
     
     def print_report(self):
-        print
+        print()
         print('  JID | # Preempts')
         print('------------------')
         for jid in sorted(self.preempt_cnts.keys()):
             print('{:5d} | {:10d}'.format(jid, self.preempt_cnts[jid]))
-        print
+        print()
 
         avg_q_len = sum(self.queue_lengths, 0.0) / len(self.queue_lengths)
         print("Avg queue length = {:.2f}".format(avg_q_len))
         print("Max queue length = {:.2f}".format(max(self.queue_lengths)))
-        print
+        print()

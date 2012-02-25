@@ -4,6 +4,7 @@
 #  
 # Michael Lee <lee@iit.edu>
 
+from __future__ import print_function
 import io
 import logging
 import argparse
@@ -195,16 +196,16 @@ class Simulator:
         self.current_job = job
 
     def print_report(self):
-        print
+        print()
         print('{:>5s} | {:>10s} | {:>10s} | {:>10s} | {:>10s}'.format(
                 'JID', 'Avg CPU', 'Avg wait', 'Avg rspnse', 'Turnaround'))
         print('-' * 57)
         sum_cpu = sum_wait = sum_rsp = sum_trn = 0
-        for jid in sorted(self.jobs.keys()):
+        for jid in sorted(self.jobs):
             job = self.jobs[jid]
             if job.state != Job.TERMINATED:
-                print("Job {} didn't complete. "
-                      "Consider increasing simulation time.").format(jid)
+                print('Job', jid, 'didn\'t complete.',
+                      'Consider increasing simulation time.')
                 continue
             n_cpubursts = float(job.n_bursts//2 + 1)
             avg_cpu  = job.run_time / n_cpubursts
@@ -223,7 +224,7 @@ class Simulator:
                 sum_wait / len(self.jobs),
                 sum_rsp / len(self.jobs),
                 float(sum_trn) / len(self.jobs)))
-        print
+        print()
         self.scheduler.print_report()
 
 
